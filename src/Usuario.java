@@ -1,14 +1,19 @@
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 public class Usuario {
     private String nome;
     private String matricula;
     private String tipo;
-    private Livro livroAlugado;
+    private List<Livro> livrosAlugados;
 
-    public Usuario(String nome, Livro livroAlugado, String tipo, String matricula) {
-        this.setNome(nome);
-        this.setLivroAlugado(livroAlugado);
-        this.setTipo(tipo);
-        this.setMatricula(matricula);
+
+    public Usuario(String nome, String matricula, String tipo) {
+        this.nome = nome;
+        this.matricula = matricula;
+        this.tipo = tipo;
+        this.livrosAlugados = new ArrayList<>();
     }
 
     public String getNome() {
@@ -35,28 +40,57 @@ public class Usuario {
         this.tipo = tipo;
     }
 
-    public Livro getLivroAlugado() {
-        return livroAlugado;
+    public List<Livro> getLivrosAlugados() {
+        return livrosAlugados;
     }
 
-    public void setLivroAlugado(Livro livroAlugado) {
-        this.livroAlugado = livroAlugado;
+    public void setLivrosAlugados(List<Livro> livrosAlugados) {
+        this.livrosAlugados = livrosAlugados;
+    }
+
+    //Estabelecendo os limites para cada tipo de usuario
+    public int getLimiteLivros(){
+        if(tipo.equalsIgnoreCase("Docente")){
+            return 2;
+        } else if (tipo.equalsIgnoreCase("Discente")) {
+            return 3;
+        }
+        return 1;
+    }
+
+    public int getPrazoDias() {
+        if (tipo.equalsIgnoreCase("Docente")){
+            return 15;
+        } else if (tipo.equalsIgnoreCase("Discente")) {
+            return 30;
+        }
+        return 7;
     }
 
     public void alugarLivro(Livro livro){
+
+        if (livrosAlugados.size() >= getLimiteLivros()){
+            System.out.println(nome + " atingiu o limite de livros!");
+            return;
+        }
+
         if (livro.isDisponivel() == true){
-            livroAlugado = livro;
+            livrosAlugados.add(livro);
             livro.setDisponivel(false);
-            System.out.println(nome + " alugou o livro: " + livro.getTitulo());
+            livro.setDataAluguel(LocalDate.now());
+            livro.setDataDevolucao(LocalDate.now().plusDays(getPrazoDias()));
+            System.out.println(nome + " alugou o livro: " + livro.getTitulo() + " | Devolver ate: " + livro.getDataDevolucao());
         } else {
             System.out.println("O livro " + livro.getTitulo() + " nao esta mais disponivel!");
         }
+
     }
     public void devolverLivro(Livro livro){
-        if(livroAlugado != null){
-            livroAlugado.setDisponivel(true);
-            System.out.println(nome + " devolveu o livro: " + livroAlugado.getTitulo());
-            livroAlugado = null;
+
+        if(livrosAlugados.contains(livro)){
+            livrosAlugados.remove(livro);
+            livro.setDisponivel(true);
+            System.out.println(nome + " devolveu o livro: " + livro.getTitulo());
         } else {
             System.out.println(nome + " nao tem nenhum livro para devolver.");
         }

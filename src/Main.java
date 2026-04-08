@@ -1,3 +1,5 @@
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -10,9 +12,10 @@ public class Main {
         biblioteca.adicionarLivro(new Livro("O Hobbit", "J.R.R. Chicken",01));
         biblioteca.adicionarLivro(new Livro("Revolucao dos bichos","George Orwell",02));
         biblioteca.adicionarLivro(new Livro("Pequeno Principe","Antoine de Saint E.",03));
-        biblioteca.adicionarUsuario(new Usuario("Arthur",null,"Discente","0001"));
-        biblioteca.adicionarUsuario(new Usuario("Pedro",null,"Doscente","0002"));
-        biblioteca.adicionarUsuario(new Usuario("Geraldo",null,"Doscente","0003"));
+        biblioteca.adicionarUsuario(new Usuario("Arthur","0001","Discente"));
+        biblioteca.adicionarUsuario(new Usuario("Pedro","0002","Discente"));
+        biblioteca.adicionarUsuario(new Usuario("Geraldo","0003","Doscente"));
+
 
 
         do {
@@ -45,7 +48,7 @@ public class Main {
                     if (biblioteca.buscarUsuario(matriculaUsuario) != null){
                         System.out.println("Esse usuario ja esta cadastrado");
                     } else {
-                        biblioteca.adicionarUsuario(new Usuario(nomeUsuario,null, tipoUsuario, matriculaUsuario));
+                        biblioteca.adicionarUsuario(new Usuario(nomeUsuario,matriculaUsuario, tipoUsuario));
                         System.out.println("Usuario cadastrado com sucesso!");
                     }
                     break;
@@ -62,10 +65,13 @@ public class Main {
                                 + " | Matricula: " + usuarioEncontrado.getMatricula());
                     }
 
-                    Livro livroAtual = usuarioEncontrado.getLivroAlugado();
+                    //List<Livro> livrosAtual  = usuarioEncontrado.getLivrosAlugados();
 
-                    if(livroAtual != null){
-                        System.out.println("Livro alugado: " + livroAtual.getTitulo());
+                    if(!usuarioEncontrado.getLivrosAlugados().isEmpty()){
+                        System.out.println("Livros alugado(s): ");
+                        for(Livro i : usuarioEncontrado.getLivrosAlugados()) {
+                            System.out.println(" - " + i.getTitulo());
+                        }
                     } else {
                         System.out.println("Nenhum livro alugado no momento!");
                     }
@@ -77,11 +83,6 @@ public class Main {
 
                     Usuario usuarioAluguel = biblioteca.buscarUsuario(matriculaAluguel);
                     if(usuarioAluguel == null) break;
-
-                    if(usuarioAluguel.getLivroAlugado() != null){
-                        System.out.println("Usuario ja possui um livro alugado: " + usuarioAluguel.getLivroAlugado().getTitulo());
-                        break;
-                    }
 
                     System.out.println("DIgite o ID do livro:");
                     int idAluguel = scanner.nextInt();
@@ -115,9 +116,19 @@ public class Main {
                     String matriculaDevolucao = scanner.nextLine();
 
                     Usuario usuarioDevolucao = biblioteca.buscarUsuario(matriculaDevolucao);
+                    if (usuarioDevolucao == null) {
+                        break;
+                    }
 
-                    if(usuarioDevolucao != null){
-                        usuarioDevolucao.devolverLivro(usuarioDevolucao.getLivroAlugado());
+                    System.out.println("ID do livro a devolver: ");
+                    int idDevolucao = scanner.nextInt();
+                    scanner.nextLine();
+
+                    Livro livroDevolucao = biblioteca.buscarLivro((idDevolucao));
+                    if(livroDevolucao == null){
+                        System.out.println("Livro nao encontrado!");
+                    } else {
+                        usuarioDevolucao.devolverLivro(livroDevolucao);
                     }
                     break;
 
